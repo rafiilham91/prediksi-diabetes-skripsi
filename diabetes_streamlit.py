@@ -1,4 +1,6 @@
 import streamlit as st
+from streamlit_option_menu import option_menu
+
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -12,7 +14,7 @@ from streamlit_folium import folium_static
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import SMOTE
-from sklearn.metrics import mean_absolute_error, mean_squared_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score
 from math import sqrt
 
 import tensorflow as tf
@@ -30,8 +32,14 @@ def load_data():
 df = load_data()
 
 # Buat sidebar untuk navigasi
-st.sidebar.title("Navigasi")
-page = st.sidebar.radio("Pilih Halaman:", ("Informasi Dataset", "Visualisasi", "Model LSTM", "Prediksi Diabetes"))
+with st.sidebar:
+    page = option_menu(
+        menu_title=None,  # required
+        options=["Informasi Dataset", "Dashboard Visualisasi", "Model LSTM", "Prediksi Diabetes"],  # required
+        icons=["house", "map", "activity", "gear"],  # optional
+        menu_icon="cast",  # optional
+        default_index=0,  # optional
+    )
 
 # Fungsi untuk menampilkan halaman awal
 if page == "Informasi Dataset":
@@ -49,9 +57,14 @@ if page == "Informasi Dataset":
         Fitur-fitur dalam dataset ini meliputi umur, tekanan darah, BMI, dan beberapa indikator kesehatan lainnya.
         """
     )
+    st.header("Akurasi Model")
+    st.write("Akurasi Model: **97.25%**")
+    st.write("Precision: **100%**")
+    st.write("Recall: **94.31%**")
+    st.write("F1 Score: **97.07%**")
 
 # Fungsi untuk menampilkan halaman dashboard visualisasi
-elif page == "Visualisasi":
+elif page == "Dashboard Visualisasi":
     st.header("Dashboard Visualisasi")
 
     # Load dataset
@@ -71,7 +84,6 @@ elif page == "Visualisasi":
         try:
             latitude = float(row['latitude'])
             longitude = float(row['longitude'])
-            kelurahan = row['kelurahan']
             umur = row['umur']
             jk = row['jk']
             diagnosis = row['diagnosis']
@@ -83,7 +95,7 @@ elif page == "Visualisasi":
                 color = 'blue'
 
             # Create a popup with information
-            popup_text = f"<b>Kelurahan:</b> {kelurahan}<br><b>Umur:</b> {umur}<br><b>Jenis Kelamin:</b> {jk}<br><b>Diagnosis:</b> {diagnosis}"
+            popup_text = f"<b>Umur:</b> {umur}<br><b>Jenis Kelamin:</b> {jk}<br><b>Diagnosis:</b> {diagnosis}"
 
             # Add a marker to the cluster with the popup and color
             folium.Marker(
@@ -167,8 +179,8 @@ elif page == "Model LSTM":
     X_test = X_test.reshape((X_test.shape[0], 1, X_test.shape[1]))
     
     # Inisilisasi Hyperparameter
-    neurons = 150
-    epochs = 150
+    neurons = 64
+    epochs = 50
     batch_size = 128
     learning_rate = 0.001
     
@@ -246,25 +258,18 @@ elif page == "Prediksi Diabetes":
     
     # Pastikan model dan scaler sudah dilatih dan disimpan di session state
     if 'model' not in st.session_state or 'scaler' not in st.session_state:
-        st.warning("Model atau scaler belum dilatih. Silakan latih model terlebih dahulu di halaman 'Model LSTM'.")
+        st.warning("Model atau scaler belum dilatih. Silakan latih model terlebih dahulu di halaman 'Jalankan Model'.")
     else:
-        # Membuat dua kolom untuk form input
-        col1, col2 = st.columns(2)
-
-        # Input form untuk data baru di kolom 1
-        with col1:
-            umur = st.number_input("Umur:", min_value=0, max_value=120, value=0)
-            jk = st.selectbox("Jenis Kelamin", ["Laki-laki", "Perempuan"])
-            merokok = st.selectbox("Merokok", ["Ya", "Tidak"])
-            aktivitas_fisik = st.selectbox("Aktivitas Fisik", ["Ya", "Tidak"])
-            konsumsi_alkohol = st.selectbox("Konsumsi Alkohol", ["Ya", "Tidak"])
-
-        # Input form untuk data baru di kolom 2
-        with col2:
-            tekanan_darah = st.number_input("Tekanan Darah:", min_value=0, value=0)
-            bmi = st.number_input("BMI:", min_value=0.0, value=0.0)
-            lingkar_perut = st.number_input("Lingkar Perut (cm)", min_value=0, max_value=200, value=0)
-            pemeriksaan_gula = st.number_input("Hasil Pemeriksaan Gula (mg/dL)", min_value=0, max_value=400, value=0)
+        # Input form untuk data baru
+        umur = st.number_input("Umur:", min_value=0, max_value=120, value=0)
+        jk = st.selectbox("Jenis Kelamin", ["Laki-laki", "Perempuan"])
+        merokok = st.selectbox("Merokok", ["Ya", "Tidak"])
+        aktivitas_fisik = st.selectbox("Aktivitas Fisik", ["Ya", "Tidak"])
+        konsumsi_alkohol = st.selectbox("Konsumsi Alkohol", ["Ya", "Tidak"])
+        tekanan_darah = st.number_input("Tekanan Darah:", min_value=0, value=0)
+        bmi = st.number_input("BMI:", min_value=0.0, value=0.0)
+        lingkar_perut = st.number_input("Lingkar Perut (cm)", min_value=0, max_value=200, value=0)
+        pemeriksaan_gula = st.number_input("Hasil Pemeriksaan Gula (mg/dL)", min_value=0, max_value=400, value=0)
 
         # Konversi input ke format numerik
         jk = 0 if jk == "Laki-laki" else 1
@@ -301,4 +306,4 @@ elif page == "Prediksi Diabetes":
 
             # Tampilkan hasil prediksi
             st.write(f"Probabilitas Diabetes: {new_prediction_prob[0][0]}")
-            st.write(f"Prediksi Kelas: {'Diabetes' if new_prediction_class[0][0] == 1 else ' Tidak Diabetes'}")
+            st.write(f"Prediksi Kelas: {'Diabetes' if new_prediction_class[0][0] == 1 else 'Non-Diabetes'}")
