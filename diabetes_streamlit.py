@@ -301,4 +301,4 @@ elif page == "Prediksi Diabetes":
 
             # Tampilkan hasil prediksi
             st.write(f"Probabilitas Diabetes: {new_prediction_prob[0][0]}")
-            st.write(f"Prediksi Kelas: {'Diabetes' if new_prediction_class[0][0] == 1 else 'Non-Diabetes'}")
+            st.write(f"Prediksi Kelas: {'Diabetes' if new_prediction_class[0][0] == 1 else ' Tidak Diabetes'}")
