@@ -12,6 +12,7 @@ from streamlit_folium import folium_static
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import SMOTE
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 from math import sqrt
 
 import tensorflow as tf
