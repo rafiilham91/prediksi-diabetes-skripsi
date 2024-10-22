@@ -36,7 +36,7 @@ with st.sidebar:
     page = option_menu(
         menu_title=None,  # required
         options=["Informasi Dataset", "Dashboard Visualisasi", "Model LSTM", "Prediksi Diabetes"],  # required
-        icons=["house", "map", "activity", "gear"],  # optional
+        icons=["table", "map", "robot", "search"],  # optional
         menu_icon="cast",  # optional
         default_index=0,  # optional
     )
@@ -57,12 +57,9 @@ if page == "Informasi Dataset":
         Fitur-fitur dalam dataset ini meliputi umur, tekanan darah, BMI, dan beberapa indikator kesehatan lainnya.
         """
     )
-    st.header("Akurasi Model")
-    st.write("Akurasi Model: **97.25%**")
-    st.write("Precision: **100%**")
-    st.write("Recall: **94.31%**")
-    st.write("F1 Score: **97.07%**")
-
+    st.write("Dataframe:")
+    st.write(df)
+    
 # Fungsi untuk menampilkan halaman dashboard visualisasi
 elif page == "Dashboard Visualisasi":
     st.header("Dashboard Visualisasi")
@@ -140,7 +137,7 @@ elif page == "Dashboard Visualisasi":
     # 5. Jumlah Pasien Diabetes Berdasarkan Jenis Kelamin
     st.subheader("Jumlah Pasien Diabetes Berdasarkan Jenis Kelamin")
     plt.figure(figsize=(6, 4))
-    sns.countplot(data=df, x='jk', hue='diagnosis', palette=['firebrick', 'royalblue'])
+    sns.countplot(data=df, x='jk', hue='diagnosis', palette=['royalblue', 'firebrick'])
     plt.title('Jumlah Pasien Diabetes Berdasarkan Jenis Kelamin')
     plt.xlabel('Jenis Kelamin')
     plt.ylabel('Jumlah Kasus')
