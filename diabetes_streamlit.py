@@ -36,7 +36,7 @@ with st.sidebar:
     page = option_menu(
         menu_title=None,  # required
         options=["Informasi Dataset", "Dashboard Visualisasi", "Model LSTM", "Prediksi Diabetes"],  # required
-        icons=["table", "map", "robot", "search"],  # optional
+        icons=["table", "map", "robot", "person-add"],  # optional
         menu_icon="cast",  # optional
         default_index=0,  # optional
     )
@@ -81,6 +81,7 @@ elif page == "Dashboard Visualisasi":
         try:
             latitude = float(row['latitude'])
             longitude = float(row['longitude'])
+            kelurahan = row['kelurahan']
             umur = row['umur']
             jk = row['jk']
             diagnosis = row['diagnosis']
@@ -92,7 +93,7 @@ elif page == "Dashboard Visualisasi":
                 color = 'blue'
 
             # Create a popup with information
-            popup_text = f"<b>Umur:</b> {umur}<br><b>Jenis Kelamin:</b> {jk}<br><b>Diagnosis:</b> {diagnosis}"
+            popup_text = f"<b>Kelurahan:</b> {kelurahan}<br><b>Umur:</b> {umur}<br><b>Jenis Kelamin:</b> {jk}<br><b>Diagnosis:</b> {diagnosis}"
 
             # Add a marker to the cluster with the popup and color
             folium.Marker(
