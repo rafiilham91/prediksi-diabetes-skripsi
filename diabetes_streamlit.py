@@ -91,7 +91,10 @@ elif page == "Dashboard Visualisasi":
             diagnosis = row['diagnosis']
 
             # Customize marker color based on diagnosis
-            color = 'red' if diagnosis == 1 else 'blue'
+            if diagnosis == 1:
+                color = 'red'
+            else:
+                color = 'blue'
 
             # Create a popup with information
             popup_text = f"<b>Kelurahan:</b> {kelurahan}<br><b>Umur:</b> {umur}<br><b>Jenis Kelamin:</b> {jk}<br><b>Diagnosis:</b> {diagnosis}"
