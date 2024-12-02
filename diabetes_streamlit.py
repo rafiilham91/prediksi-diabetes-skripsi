@@ -180,9 +180,9 @@ elif page == "Model LSTM":
     X_test = X_test.reshape((X_test.shape[0], 1, X_test.shape[1]))
     
     # Inisilisasi Hyperparameter
-    neurons = 64
+    neurons = 50
     epochs = 50
-    batch_size = 128
+    batch_size = 32
     learning_rate = 0.001
     
     st.write(f"Jumlah Neuron: {neurons}")
