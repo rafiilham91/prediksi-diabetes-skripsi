@@ -282,19 +282,6 @@ elif page == "Model LSTM":
         st.write(f"Mean Absolute Error (MAE): {mae}")
         st.write(f"Root Mean Squared Error (RMSE): {rmse}")
 
-        # Penjelasan Fungsi Aktivasi
-        st.subheader("Penjelasan Fungsi Aktivasi")
-        st.write("""
-        Fungsi aktivasi digunakan untuk memperkenalkan non-linearitas ke dalam model, memungkinkan mempelajari pola yang kompleks. 
-        Pada model LSTM ini, digunakan dua fungsi aktivasi utama, yaitu ReLU dan Sigmoid:
-        
-        - **ReLU (Rectified Linear Unit):**
-          - Keunggulan utama ReLU adalah mengurangi masalah vanishing gradient, sehingga model dapat belajar pola yang lebih kompleks dengan lebih efisien.
-          
-        - **Sigmoid:**
-          - Keunggulan fungsi sigmoid adalah kemampuannya untuk memetakan nilai output ke skala yang sesuai untuk probabilitas, tetapi rentan terhadap masalah vanishing gradient pada lapisan yang lebih dalam.
-        """)
-
 # Fungsi untuk menampilkan halaman prediksi
 elif page == "Prediksi Diabetes":
     st.header('Input Data Baru untuk Prediksi Diabetes')
