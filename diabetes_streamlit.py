@@ -55,9 +55,15 @@ if page == "Informasi Dataset":
         """
         Dataset ini berisi informasi tentang pasien yang memiliki risiko diabetes.
         Fitur-fitur dalam dataset ini meliputi umur, tekanan darah, BMI, dan beberapa indikator kesehatan lainnya.
+        Dataset yang digunakan dalam penelitian ini mencakup informasi yang dikumpulkan dari bulan Januari s/d Juni 2024.
         """
     )
-    st.write("Dataframe:")
+    st.header("Panduan Singkat")
+    st.write("""
+        Sebelum menggunakan halaman 'Prediksi Diabetes' untuk memasukkan data baru, model harus dilatih terlebih dahulu pada halaman 'Model LSTM'.
+    """)
+    
+    st.header("Dataframe:")
     st.write(df)
     
 # Fungsi untuk menampilkan halaman dashboard visualisasi
@@ -69,6 +75,9 @@ elif page == "Dashboard Visualisasi":
 
     # 1. PEMETAAN MENGGUNAKAN FOLIUM
     st.subheader("Pemetaan Kasus Diabetes di Kota Bogor")
+    st.write("""
+    Visualisasi dalam bentuk pemetaan untuk dapat memahami sebaran pasien yang terkena diabetes di Kota Bogor
+    """)
 
     # Create a map centered on Kota Bogor
     map_bogor = folium.Map(location=[-6.595038, 106.816635], zoom_start=12)
@@ -113,6 +122,9 @@ elif page == "Dashboard Visualisasi":
 
     # 2. Distribusi Diagnosa Diabetes di Setiap Kelurahan
     st.subheader("Distribusi Diagnosa Diabetes di Setiap Kelurahan")
+    st.write("""
+    Grafik di bawah merupak distribusi kasus diabetes di setiap kelurahan. Warna biru atau 0 untuk kasus Tidak Diabetes, sementara warna merah untuk kasus Diabetes.
+    """)
     plt.figure(figsize=(12, 6))
     sns.countplot(data=df, x='kelurahan', hue='diagnosis', palette=['royalblue', 'firebrick'])
     plt.xticks(rotation=90)
@@ -123,6 +135,9 @@ elif page == "Dashboard Visualisasi":
 
     # 3. Perbandingan Jumlah Diagnosa Diabetes dan Non-Diabetes (Pie Chart)
     st.subheader("Perbandingan Jumlah Diagnosa Diabetes dan Non-Diabetes")
+    st.write("""
+    Dalam pie chart dibawah dapat dilihat bahwa jumlah kasus diabetes (warna merah) lebih banyak dibandingkan dengan kasus tidak diabetes (warna biru).
+    """)
     plt.figure(figsize=(6, 6))
     df['diagnosis'].value_counts().plot.pie(autopct='%1.1f%%', colors=['firebrick', 'royalblue'], startangle=90, explode=[0.1, 0])
     plt.title('Perbandingan Jumlah Diagnosa Diabetes dan Non-Diabetes')
@@ -131,6 +146,8 @@ elif page == "Dashboard Visualisasi":
 
     # 4. Heatmap Korelasi
     st.subheader("Heatmap Korelasi Antar Variabel Numerik")
+    st.write(""" Korelasi ditampilkan dengan nilai antara -1 (korelasi negatif sempurna) hingga 1 (korelasi positif sempurna). Warna merah menggambarkan korelasi positif, sedangkan warna biru menggambarkan korelasi negatif. Warna netral menunjukkan hubungan yang lemah atau tidak signifikan.
+    """)
     numerical_columns = df.select_dtypes(include=['float64', 'int64']).columns
     if len(numerical_columns) > 0:
         plt.figure(figsize=(8, 6))
@@ -140,6 +157,8 @@ elif page == "Dashboard Visualisasi":
 
     # 5. Jumlah Pasien Diabetes Berdasarkan Jenis Kelamin
     st.subheader("Jumlah Pasien Diabetes Berdasarkan Jenis Kelamin")
+    st.write(""" Grafik dibawah ini merupakan jumlah kasus diabetes berdasarkan jenis kelamin. Nilai 0 pada Jenis Kelamin untuk laki-laki dan 1 untuk perempuan. Sementara warna bar merah untuk kasus diabetes dan warna biru untuk kasus tidak diabetes.
+    """)
     plt.figure(figsize=(6, 4))
     sns.countplot(data=df, x='jk', hue='diagnosis', palette=['royalblue', 'firebrick'])
     plt.title('Jumlah Pasien Diabetes Berdasarkan Jenis Kelamin')
@@ -189,15 +208,25 @@ elif page == "Model LSTM":
     st.write(f"Jumlah Epoch: {epochs}")
     st.write(f"Batch Size: {batch_size}")
     st.write(f"Learning Rate: {learning_rate}")
-    
+
     # Tambahkan tombol untuk melatih model
     if st.button('Latih Model'):
         # Membangun Model LSTM
         model = Sequential()
+
+        # Lapisan LSTM pertama dengan fungsi aktivasi ReLU
+        # ReLU membantu mengatasi masalah vanishing gradient dengan menyaring nilai negatif menjadi nol
+        # dan memungkinkan propagasi gradien yang efisien selama pelatihan.
         model.add(LSTM(neurons, activation='relu', return_sequences=True, input_shape=(1, X_train.shape[2])))
-        model.add(Dropout(0.2))
+        model.add(Dropout(0.2))# Dropout untuk mencegah overfitting
+
+        # Lapisan LSTM kedua dengan fungsi aktivasi ReLU
         model.add(LSTM(neurons, activation='relu', return_sequences=False))
         model.add(Dropout(0.2))
+
+        # Lapisan output dengan fungsi aktivasi sigmoid
+        # Sigmoid memetakan nilai menjadi rentang 0 hingga 1, yang cocok untuk prediksi probabilitas
+        # pada tugas klasifikasi biner seperti deteksi diabetes.
         model.add(Dense(1, activation='sigmoid'))
         
         # Compile Model dengan Optimizer
@@ -253,6 +282,19 @@ elif page == "Model LSTM":
         st.write(f"Mean Absolute Error (MAE): {mae}")
         st.write(f"Root Mean Squared Error (RMSE): {rmse}")
 
+        # Penjelasan Fungsi Aktivasi
+        st.subheader("Penjelasan Fungsi Aktivasi")
+        st.write("""
+        Fungsi aktivasi digunakan untuk memperkenalkan non-linearitas ke dalam model, memungkinkan mempelajari pola yang kompleks. 
+        Pada model LSTM ini, digunakan dua fungsi aktivasi utama, yaitu ReLU dan Sigmoid:
+        
+        - **ReLU (Rectified Linear Unit):**
+          - Keunggulan utama ReLU adalah mengurangi masalah vanishing gradient, sehingga model dapat belajar pola yang lebih kompleks dengan lebih efisien.
+          
+        - **Sigmoid:**
+          - Keunggulan fungsi sigmoid adalah kemampuannya untuk memetakan nilai output ke skala yang sesuai untuk probabilitas, tetapi rentan terhadap masalah vanishing gradient pada lapisan yang lebih dalam.
+        """)
+
 # Fungsi untuk menampilkan halaman prediksi
 elif page == "Prediksi Diabetes":
     st.header('Input Data Baru untuk Prediksi Diabetes')
@@ -269,13 +311,13 @@ elif page == "Prediksi Diabetes":
             umur = st.number_input("Umur:", min_value=0, max_value=120, value=0)
             jk = st.selectbox("Jenis Kelamin", ["Laki-laki", "Perempuan"])
             merokok = st.selectbox("Merokok", ["Ya", "Tidak"])
-            aktivitas_fisik = st.selectbox("Aktivitas Fisik", ["Ya", "Tidak"])
+            aktivitas_fisik = st.selectbox("Aktivitas Fisik (olahraga berat)", ["Ya", "Tidak"])
             konsumsi_alkohol = st.selectbox("Konsumsi Alkohol", ["Ya", "Tidak"])
 
         # Input form untuk data baru di kolom 2
         with col2:
-            tekanan_darah = st.number_input("Tekanan Darah:", min_value=0, value=0)
-            bmi = st.number_input("BMI:", min_value=0.0, value=0.0)
+            tekanan_darah = st.number_input("Tekanan Darah (sistol) mmHg:", min_value=0, value=0)
+            bmi = st.number_input("BMI (berat badan (kg)/(tinggi badan(m))^2):", min_value=0.0, value=0.0)
             lingkar_perut = st.number_input("Lingkar Perut (cm)", min_value=0, max_value=200, value=0)
             pemeriksaan_gula = st.number_input("Hasil Pemeriksaan Gula (mg/dL)", min_value=0, max_value=400, value=0)
 
@@ -313,5 +355,5 @@ elif page == "Prediksi Diabetes":
             new_prediction_class = (new_prediction_prob > 0.5).astype("int32")
 
             # Tampilkan hasil prediksi
-            st.write(f"Probabilitas Diabetes: {new_prediction_prob[0][0]}")
+            st.write(f"Probabilitas Diabetes: {new_prediction_prob[0][0] * 100:.2f}%")
             st.write(f"Prediksi Kelas: {'Diabetes' if new_prediction_class[0][0] == 1 else 'Non-Diabetes'}")
